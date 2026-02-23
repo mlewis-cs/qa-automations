@@ -2,7 +2,7 @@
 name: Database Investigator
 description: "Use this agent when we need DB information to investigate a problem"
 model: Claude Haiku 4.5 (copilot)
-tools: ["execute_sql", "search_objects"]
+tools: ["execute_sql", "search_objects", "csv-writer"]
 agents: []
 ---
 
@@ -126,6 +126,7 @@ Table: attorneys
   - onboarding_seen: TEXT[]
 
 Table: audit_trails
+description: Tracks create/update/delete operations across all tables with user, timestamps, and change details
   - id: INTEGER [PK] NOT NULL
   - created_at: TIMESTAMP WITHOUT TIME ZONE
   - record_table: TEXT
@@ -341,6 +342,7 @@ Table: case_types
   - ai_generated_at: TIMESTAMP WITHOUT TIME ZONE
 
 Table: cases
+description: Core table for legal matters/cases containing clients, attorneys, case types, statuses, and case details
   - id: INTEGER [PK] NOT NULL
   - primary_attorney_id: INTEGER -> attorneys.id
   - primary_attorney_sub_user_id: INTEGER -> sub_users.id
@@ -746,6 +748,7 @@ Table: document_signatories
   - prefix: TEXT
 
 Table: feature_audit_logs
+description: Tracks when features are enabled/disabled or their settings are changed for analytics
   - id: INTEGER [PK] NOT NULL
   - created_at: TIMESTAMP WITHOUT TIME ZONE
   - updated_at: TIMESTAMP WITHOUT TIME ZONE
@@ -811,6 +814,7 @@ Table: firm_selection_responses
   - reason_id: INTEGER -> firm_selection_reasons.id
 
 Table: firm_settings
+description: Configuration settings for firms stored as JSONB including feature toggles and preferences
   - id: INTEGER [PK] NOT NULL
   - created_at: TIMESTAMP WITHOUT TIME ZONE
   - updated_at: TIMESTAMP WITHOUT TIME ZONE
@@ -820,6 +824,7 @@ Table: firm_settings
   - package: TEXT
 
 Table: firms
+description: Law firms and organizations using the platform with pricing, settings, integrations, and contact info
   - id: INTEGER [PK] NOT NULL
   - name: TEXT
   - last_import_started: TIMESTAMP WITHOUT TIME ZONE
@@ -914,6 +919,7 @@ Table: implementation_whitelist
   - user_id: INTEGER -> users._id
 
 Table: import_logs
+description: Generic logging for various import operations including cases, treatments, and other data syncs
   - id: INTEGER [PK] NOT NULL
   - type: TEXT
   - integration_id: TEXT
@@ -1020,6 +1026,7 @@ Table: matter_imports
   - synthetic_clients_data: JSONB
 
 Table: matter_logs
+description: Logs individual matter/case import operations tracking validation results, errors, and success/failure
   - id: INTEGER [PK] NOT NULL
   - integration_id: TEXT
   - readable_id: TEXT
@@ -1085,6 +1092,7 @@ Table: message_templates
   - shortcodes_not_supported: BOOLEAN
 
 Table: messages
+description: Access may be denied when querying this table
   - id: INTEGER [PK] NOT NULL
   - case_id: INTEGER -> cases._id
   - has_logged_treatment: BOOLEAN
@@ -1454,6 +1462,7 @@ Table: stripe_integrations
   - subscription_id: TEXT
 
 Table: sub_users
+description: Links users to firms/organizations with role types (attorney, paralegal, client, member) and permissions
   - id: INTEGER [PK] NOT NULL
   - created_at: TIMESTAMP WITHOUT TIME ZONE
   - updated_at: TIMESTAMP WITHOUT TIME ZONE
@@ -1529,6 +1538,7 @@ Table: triage_records
   - last_processed_timestamp: TIMESTAMP WITHOUT TIME ZONE
 
 Table: user_logins
+description: Tracks user login events with timestamps, device type, and user type for analytics and security
   - id: INTEGER [PK] NOT NULL
   - created_at: TIMESTAMP WITHOUT TIME ZONE
   - user_id: INTEGER -> users._id
@@ -1553,6 +1563,7 @@ Table: user_two_fa_configurations
   - updated_at: TIMESTAMP WITHOUT TIME ZONE
 
 Table: users
+description: Access may be denied when querying this table
   - id: INTEGER [PK] NOT NULL
   - created_at: TIMESTAMP WITHOUT TIME ZONE
   - first_name: TEXT

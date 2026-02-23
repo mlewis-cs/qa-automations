@@ -1,6 +1,12 @@
 # DBHub MCP
 dbhub.toml
 
+# CSV Writer MCP
+node_modules/
+*.csv
+db_results/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

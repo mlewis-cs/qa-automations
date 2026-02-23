@@ -23,10 +23,18 @@ fi
 
 echo ""
 
-# Copy dbhub.toml.example to dbhub.toml
+# Install MCP CSV Writer dependencies
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$( dirname "$SCRIPT_DIR" )"
 
+cd "$PROJECT_ROOT/mcp-csv-writer"
+npm install
+cd "$PROJECT_ROOT"
+echo "MCP CSV Writer dependencies installed"
+
+echo ""
+
+# Copy dbhub.toml.example to dbhub.toml
 if [ -f "$PROJECT_ROOT/dbhub.toml" ]; then
     echo "dbhub.toml already exists"
 else
