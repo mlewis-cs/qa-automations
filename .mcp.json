@@ -2,7 +2,8 @@
   "mcpServers": {
     "dbhub": {
       "command": "npx",
-      "args": ["-y", "@bytebase/dbhub@latest", "--transport", "stdio"]
+      "args": ["-y", "@bytebase/dbhub@latest", "--transport", "stdio"],
+      "cwd": "${workspaceFolder}"
     }
   }
 }

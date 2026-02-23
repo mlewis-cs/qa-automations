@@ -3,11 +3,27 @@
 # dbhub.toml is gitignored and never committed.
 
 [[sources]]
-id = "main"
-dsn = "postgres://DB_USER:DB_PASSWORD@DB_HOST:5432/DB_NAME?sslmode=require"
+id = "production"
+type="postgres"
+host = ""
+port = 5432
+database = "case_status"
+user = ""
+password = ""
+sslmode = "require"
+connection_timeout = 10
+
+ssh_host = ""
+ssh_port = 22
+ssh_user = ""
+ssh_key = ""
 
 [[tools]]
 name = "execute_sql"
-source = "main"
+source = "production"
 readonly = true
 max_rows = 50
+
+[[tools]]
+name = "search_objects"
+source = "production"
