@@ -11,7 +11,14 @@
     "csv-writer": {
       "type": "stdio",
       "command": "node",
-      "args": ["${workspaceFolder}/mcp-csv-writer/index.js"]
+      "args": ["${workspaceFolder}/mcp-csv-writer/index.js"],
+      "env": {
+        "MCP_WORKSPACE": "${workspaceFolder}"
+      }
+    },
+    "atlassian": {
+      "url": "https://mcp.atlassian.com/v1/mcp",
+      "type": "http"
     }
   }
 }

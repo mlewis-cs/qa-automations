@@ -100,8 +100,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       throw new Error("filename must be a non-empty string");
     }
 
-    // Resolve path relative to workspace (parent of mcp-csv-writer)
-    const workspaceRoot = resolve(__dirname, "..");
+    // Determine workspace root. Prefer explicit env vars, then process.cwd(),
+    // and fall back to the package location parent. This ensures when the
+    // MCP server is installed in a temp location we still write into the
+    // user's workspace when available.
+    const envWorkspace = process.env.MCP_WORKSPACE || process.env.WORKSPACE_FOLDER || process.env.WORKSPACE_ROOT || process.env.GITHUB_WORKSPACE;
+    const workspaceRoot = envWorkspace ? resolve(envWorkspace) : process.cwd() || resolve(__dirname, "..");
     const dbResultsFolder = resolve(workspaceRoot, "db_results");
     mkdirSync(dbResultsFolder, { recursive: true });
     const filePath = resolve(dbResultsFolder, filename);
@@ -119,6 +123,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         {
           type: "text",
           text: `Successfully wrote ${rowCount} row(s) to ${filename}\nFull path: ${filePath}`,
+        },
+        {
+          type: "text",
+          text: `Workspace root used: ${workspaceRoot}`,
         },
       ],
     };
