@@ -1,0 +1,13 @@
+# DBHub MCP Server Configuration
+# Copy this file to dbhub.toml and fill in your database credentials.
+# dbhub.toml is gitignored and never committed.
+
+[[sources]]
+id = "main"
+dsn = "postgres://DB_USER:DB_PASSWORD@DB_HOST:5432/DB_NAME?sslmode=require"
+
+[[tools]]
+name = "execute_sql"
+source = "main"
+readonly = true
+max_rows = 50
