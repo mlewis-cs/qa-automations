@@ -6,6 +6,10 @@ node_modules/
 *.csv
 db_results/
 
+# Repos
+repos/
+
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
