@@ -1,10 +1,10 @@
 # QA Automations — Regression + Agentic UAT
 
-This repo is a Playwright + Gherkin (Cucumber.js) regression and agentic UAT framework. It includes:
-- A Playwright test harness in TypeScript
-- Gherkin feature files + TypeScript step definitions
-- An MCP server that exposes the current step inventory and feature catalog
-- A Codex skill (`uat-scenario-writer`) that generates new scenarios and missing steps
+This repo is a Playwright + Gherkin (Behave) regression and agentic UAT framework. It includes:
+- A Playwright test harness in Python
+- Gherkin feature files + Python step definitions
+- An MCP server that exposes the current step inventory and feature catalog (planned)
+- A Codex skill (`uat-scenario-writer`) that generates new scenarios and missing steps (planned)
 
 ## Goals
 - Allow humans to describe tests in plain English
@@ -15,10 +15,10 @@ This repo is a Playwright + Gherkin (Cucumber.js) regression and agentic UAT fra
 
 ## Architecture Overview
 
-**Playwright + Cucumber.js**
+**Playwright + Behave**
 - Playwright drives the browser
-- Cucumber.js runs Gherkin features
-- Steps are implemented in TypeScript
+- Behave runs Gherkin features
+- Steps are implemented in Python
 
 **MCP Server**
 - Exposes existing steps and features to the Codex skill
@@ -29,28 +29,24 @@ This repo is a Playwright + Gherkin (Cucumber.js) regression and agentic UAT fra
   - Create new `.feature` files
   - Reuse existing steps where possible
   - Insert missing steps with `# MUST IMPLEMENT`
-  - Create step stubs in TypeScript with explanatory comments
+  - Create step stubs in Python with explanatory comments
 
 ## Repository Layout (Planned)
 
 - `README.md`
-- `package.json`
-- `tsconfig.json`
-- `playwright.config.ts`
-- `cucumber.js`
+- `requirements.txt`
+- `behave.ini`
 - `features/`
 - `features/<domain>/`
 - `features/<domain>/<feature>.feature`
 - `features/steps/`
-- `features/steps/<domain>.steps.ts`
-- `features/support/`
-- `features/support/world.ts`
-- `features/support/hooks.ts`
+- `features/steps/<domain>_steps.py`
+- `features/environment.py`
 - `mcp/`
-- `mcp/server.ts`
-- `mcp/types.ts`
-- `mcp/step-inventory.ts`
-- `mcp/feature-index.ts`
+- `mcp/server.py`
+- `mcp/types.py`
+- `mcp/step_inventory.py`
+- `mcp/feature_index.py`
 - `mcp/README.md`
 - `skills/`
 - `skills/uat-scenario-writer/`
@@ -78,8 +74,8 @@ The `uat-scenario-writer` skill:
 3. Reuses existing steps whenever possible.
 4. If a step is missing:
    - Adds `# MUST IMPLEMENT` to the step line in the `.feature`
-   - Creates a TypeScript step stub in `features/steps/<domain>.steps.ts`
-   - Annotates the stub with `// MUST IMPLEMENT: <reason>`
+   - Creates a Python step stub in `features/steps/<domain>_steps.py`
+   - Annotates the stub with `# MUST IMPLEMENT: <reason>`
 5. Adds a “Missing Steps Explanation” section to the end of the feature file.
 
 ### Example Missing Step (Feature File)
@@ -91,11 +87,11 @@ Scenario: Update profile picture
 ```
 
 ### Example Missing Step (Step Stub)
-```ts
-When('I upload a new profile picture', async function () {
-  // MUST IMPLEMENT: No existing step handles file upload in profile context.
-  throw new Error('Step not implemented');
-});
+```py
+@when("I upload a new profile picture")
+def step_when_upload_profile_picture(context):
+  # MUST IMPLEMENT: No existing step handles file upload in profile context.
+  raise NotImplementedError("Step not implemented")
 ```
 
 ## Environment Variables
@@ -104,8 +100,8 @@ When('I upload a new profile picture', async function () {
   Base URL for the target staging environment.
 
 ## Running Tests (Planned)
-- `npm test` or `npx cucumber-js`
-- Playwright will launch browsers based on `playwright.config.ts`
+- `python -m behave` (run from `tests/`)
+- Playwright will launch browsers based on environment variables
 
 ## Next Steps
 - Implement initial MCP server
