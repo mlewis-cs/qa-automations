@@ -2,7 +2,7 @@ import { After, AfterAll, Before, BeforeAll, setDefaultTimeout } from "@cucumber
 import { chromium, firefox, webkit, type Browser } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
-import playwrightConfig from "../playwright.config.ts";
+import playwrightConfig from "../../playwright.config.ts";
 import type { World } from "./world.ts";
 
 let browser: Browser | undefined;

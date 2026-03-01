@@ -5,7 +5,6 @@ export default defineConfig({
   projects: [
     {
       name: "communicator-interface",
-      testDir: "./tests/communicator-interface",
       use: {
         baseURL: "https://chrome.casestatus.com"
       }
