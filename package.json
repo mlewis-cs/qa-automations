@@ -9,7 +9,10 @@
     "install:browsers": "playwright install --with-deps"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^12.7.0",
     "@playwright/test": "^1.50.0",
+    "@types/node": "^25.3.3",
+    "tsx": "^4.20.5",
     "typescript": "^5.5.0"
   }
 }
