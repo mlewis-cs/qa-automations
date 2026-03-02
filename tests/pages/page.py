@@ -22,6 +22,11 @@ class BasePage:
             raise ValueError("BASE_URL environment variable is not set. Add it to tests/.env")
         url = f"{base_url.rstrip('/')}{self.SUB_DIRECTORY}"
         self.page.goto(url, wait_until="domcontentloaded")
+    
+
+    def check_url(self):
+        self.page.wait_for_url(f"**{self.SUB_DIRECTORY}")
+        assert self.page.url.endswith(self.SUB_DIRECTORY), f"Expected to be on {self.SUB_DIRECTORY} page, but was on {self.page.url}"
 
 
     def click(self, selector: str) -> None:

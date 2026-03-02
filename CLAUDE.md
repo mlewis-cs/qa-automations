@@ -1,110 +1,95 @@
-# QA Automations — Regression + Agentic UAT
+# QA Automations (Behave + Playwright) — Codebase Guide
 
-This repo is a Playwright + Gherkin (Behave) regression and agentic UAT framework. It includes:
-- A Playwright test harness in Python
-- Gherkin feature files + Python step definitions
-- An MCP server that exposes the current step inventory and feature catalog (planned)
-- A Codex skill (`uat-scenario-writer`) that generates new scenarios and missing steps (planned)
+This repo contains a small BDD-style UI test suite built on **Behave** and **Playwright (sync API)**. Tests live under `tests/` and are organized by feature files, step definitions, and page objects.
 
-## Goals
-- Allow humans to describe tests in plain English
-- Generate consistent Gherkin scenarios automatically
-- Reuse existing step definitions where possible
-- Flag missing steps with clear TODOs and explanations
-- Provide a lightweight MCP surface for agentic test generation
+## Top-Level Layout
 
-## Architecture Overview
+- `tests/features/*.feature`
+  - Gherkin feature files describing scenarios.
+- `tests/features/steps/*.py`
+  - Behave step definitions that implement the Gherkin steps.
+- `tests/features/environment.py`
+  - Behave hooks that configure Playwright, load `.env`, and register page objects.
+- `tests/pages/*.py`
+  - Page objects used by steps.
+- `tests/.env`
+  - Runtime config (loaded by `environment.py`).
+- `tests/.env.example`
+  - Example values (includes `BASE_URL` and `HEADLESS_MODE`).
+- `tests/requirements.txt`
+  - Python dependencies: `behave`, `playwright`, `python-dotenv`.
 
-**Playwright + Behave**
-- Playwright drives the browser
-- Behave runs Gherkin features
-- Steps are implemented in Python
+## Current Test Architecture
 
-**MCP Server**
-- Exposes existing steps and features to the Codex skill
-- Enables scenario generation that respects existing test coverage
+**1) Feature files** (`tests/features/*.feature`)
+- Define scenarios in Gherkin. Example: `tests/features/login.feature` has a `Login` feature with a `Valid login` scenario.
 
-**Codex Skill**
-- `uat-scenario-writer` uses MCP data to:
-  - Create new `.feature` files
-  - Reuse existing steps where possible
-  - Insert missing steps with `# MUST IMPLEMENT`
-  - Create step stubs in Python with explanatory comments
+**2) Step definitions** (`tests/features/steps/*.py`)
+- Implement Gherkin steps using Behave decorators (`@given`, `@when`, `@then`).
+- Steps use:
+  - `context.page` (Playwright `Page`) for direct actions and URL waits.
+  - `context.pages[SomePageClass]` for page-object methods.
+- Example: `tests/features/steps/login_steps.py` calls `context.pages[LoginPage].goto()` and `LoginPage.login()`.
 
-## Repository Layout (Planned)
+**3) Environment setup** (`tests/features/environment.py`)
+- `before_all`:
+  - Loads `tests/.env` with `python-dotenv`.
+  - Launches Playwright Chromium in headless or headed mode depending on `HEADLESS_MODE`.
+  - Creates a single `Page` and registers page objects in `context.pages` (dictionary keyed by class).
+- `after_all` closes the browser and Playwright instance.
 
-- `README.md`
-- `requirements.txt`
-- `behave.ini`
-- `features/`
-- `features/<domain>/`
-- `features/<domain>/<feature>.feature`
-- `features/steps/`
-- `features/steps/<domain>_steps.py`
-- `features/environment.py`
-- `mcp/`
-- `mcp/server.py`
-- `mcp/types.py`
-- `mcp/step_inventory.py`
-- `mcp/feature_index.py`
-- `mcp/README.md`
-- `skills/`
-- `skills/uat-scenario-writer/`
-- `skills/uat-scenario-writer/SKILL.md`
-- `skills/uat-scenario-writer/templates/`
-- `skills/uat-scenario-writer/templates/feature.md`
-- `skills/uat-scenario-writer/templates/step-stub.ts`
+**4) Page objects** (`tests/pages/*.py`)
+- `BasePage` in `tests/pages/page.py` provides shared helpers (`goto`, `click`, `fill`).
+- Each concrete page object inherits `BasePage` and **must** define `SUB_DIRECTORY`.
+- Example: `LoginPage` in `tests/pages/login_page.py` sets `SUB_DIRECTORY = "/login"` and exposes a `login()` helper.
 
-## MCP API (v1)
+## Page Files and `SUB_DIRECTORY`
 
-The MCP exposes a minimal set of endpoints for scenario generation:
+`BasePage.goto()` builds a URL like:
 
-- `GET /steps`
-  - Returns step inventory (Given/When/Then patterns + location)
-- `GET /features`
-  - Returns existing features and scenario titles
-- `GET /health`
-  - Health check for the MCP server
-
-## How the Skill Generates Scenarios
-
-The `uat-scenario-writer` skill:
-1. Reads MCP `steps` and `features`.
-2. Produces a new `.feature` file in `features/<domain>/`.
-3. Reuses existing steps whenever possible.
-4. If a step is missing:
-   - Adds `# MUST IMPLEMENT` to the step line in the `.feature`
-   - Creates a Python step stub in `features/steps/<domain>_steps.py`
-   - Annotates the stub with `# MUST IMPLEMENT: <reason>`
-5. Adds a “Missing Steps Explanation” section to the end of the feature file.
-
-### Example Missing Step (Feature File)
-```gherkin
-Scenario: Update profile picture
-  Given I am on the profile page
-  When I upload a new profile picture # MUST IMPLEMENT
-  Then I should see the new profile picture
+```
+{BASE_URL.rstrip('/')}{SUB_DIRECTORY}
 ```
 
-### Example Missing Step (Step Stub)
-```py
-@when("I upload a new profile picture")
-def step_when_upload_profile_picture(context):
-  # MUST IMPLEMENT: No existing step handles file upload in profile context.
-  raise NotImplementedError("Step not implemented")
-```
+- `BASE_URL` comes from `tests/.env`.
+- `SUB_DIRECTORY` is a required class attribute on every page object.
+- `BasePage.__init_subclass__` enforces that `SUB_DIRECTORY` is non-empty, so missing values fail fast.
 
-## Environment Variables
+**How to use this when picking a page for a sub-directory:**
+- Find (or create) a page class whose `SUB_DIRECTORY` matches the URL path you need.
+- Call `context.pages[ThatPage].goto()` to navigate.
 
-- `BASE_URL`
-  Base URL for the target staging environment.
+Example:
+- `LoginPage.SUB_DIRECTORY = "/login"`
+- `LoginPage.goto()` navigates to `BASE_URL + "/login"`.
 
-## Running Tests (Planned)
-- `python -m behave` (run from `tests/`)
-- Playwright will launch browsers based on environment variables
+## Adding or Updating Tests
 
-## Next Steps
-- Implement initial MCP server
-- Add foundational step definitions
-- Seed example feature files
-- Run a first end-to-end regression pass
+**Add a new page object**
+- Create a file in `tests/pages/`, inherit from `BasePage`, define `SUB_DIRECTORY`, add selectors and helper methods.
+- Register the page in `tests/features/environment.py` by adding it to `context.pages`.
+
+**Add a new step definition**
+- Create or edit a file in `tests/features/steps/`.
+- Use Behave decorators (`@given`, `@when`, `@then`).
+- Use `context.pages[YourPage]` for page-level behavior, and `context.page` for low-level Playwright calls.
+
+**Add a new feature**
+- Add a new `.feature` file in `tests/features/`.
+- Reference steps that exist or implement them in `tests/features/steps/`.
+
+## Implementation Details That Matter
+
+- **Playwright is used via the sync API**, not async.
+- The login steps normalize user keys into env vars:
+  - Step text: `Then I log in as "test attorney"`
+  - Looks up `USER_TEST_ATTORNEY_EMAIL` and `USER_TEST_ATTORNEY_PASSWORD` in `.env`.
+- `tests/features/steps/cases_steps.py` currently exists but is empty.
+
+## Quick Mental Model for LLMs
+
+- Feature files describe *what* should happen.
+- Step definitions encode *how* to do it and orchestrate page objects.
+- Page objects encapsulate selectors and page-specific actions.
+- `SUB_DIRECTORY` is the canonical mapping from a page class to its URL path.
+- `context.pages` is the registry that makes page objects available inside steps.
