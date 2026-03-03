@@ -22,8 +22,8 @@ def step_login_as_user(context, user_key: str):
         )
     context.pages[AuthSignInPage].login(username, password)
 
-@then("I am redirected to the cases page after the account page")
-def step_redirect_account_to_cases(context):
+@then("I am logged in after the account page")
+def step_logged_in_after_account_page(context):
     context.pages[AuthAccountPage].check_url()
     assert context.pages[AuthAccountPage].check_account_num() == 1, "Expected user to have 1 account; update test data"
     context.pages[CasesPage].check_url()
@@ -32,8 +32,8 @@ def step_redirect_account_to_cases(context):
 def step_redirect_to_account(context):
     context.pages[AuthAccountPage].check_url()
 
-@then("I am redirected to the cases page")
-def step_redirect_to_cases(context):
+@then("I am logged in")
+def step_logged_in(context):
     context.pages[CasesPage].check_url()
 
 @when("I select a random account")
