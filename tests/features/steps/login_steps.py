@@ -14,6 +14,10 @@ def step_login_as_user(context, user_key: str):
     username, password = _get_user_credentials(user_key)
     context.pages[AuthSignInPage].login(username, password)
 
+@when("I log in with invalid credentials")
+def step_login_with_invalid_credentials(context):
+    context.pages[AuthSignInPage].login("invalid@example.com", "wrongpass")
+
 @given('I\'m in firm "{firm}" as "{user_key}"')
 def step_login_in_firm(context, firm: str, user_key: str):
     context.pages[AuthSignInPage].goto()
@@ -38,6 +42,10 @@ def step_redirect_to_account(context):
 @then("I am on the login page")
 def step_on_login_page(context):
     context.pages[AuthSignInPage].check_url()
+
+@then("I see an invalid credentials error message")
+def step_invalid_credentials_error(context):
+    context.pages[AuthSignInPage].check_invalid_credentials_error()
 
 @then("I am logged in")
 def step_logged_in(context):

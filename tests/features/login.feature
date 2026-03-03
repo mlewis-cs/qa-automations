@@ -14,3 +14,9 @@ Feature: Login
 
     Scenario: Shorthand
     Given I'm in firm "Mobile Testing" as "multi account attorney"
+
+    Scenario: Invalid credentials show an error
+    Given I am on the login page
+    When I log in with invalid credentials
+    Then I see an invalid credentials error message
+    And I am on the login page

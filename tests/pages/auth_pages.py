@@ -8,11 +8,18 @@ class AuthSignInPage(BasePage):
     EMAIL_PHONE = "#email"
     PASSWORD = "#password"
     LOGIN_BUTTON = "button[type='submit']"
+    INVALID_CREDENTIALS_ERROR = (
+        "h3:has-text('Your username and password combination is not correct. Please try again.')"
+    )
 
     def login(self, username: str, password: str):
         self.fill(self.EMAIL_PHONE, username)
         self.fill(self.PASSWORD, password)
         self.click(self.LOGIN_BUTTON)
+
+    def check_invalid_credentials_error(self) -> None:
+        error = self.find(self.INVALID_CREDENTIALS_ERROR)
+        error.wait_for(state="visible", timeout=5000)
 
 
 class AuthAccountPage(BasePage):
