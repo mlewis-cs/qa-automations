@@ -35,6 +35,10 @@ def step_logged_in_after_account_page(context):
 def step_redirect_to_account(context):
     context.pages[AuthAccountPage].check_url()
 
+@then("I am on the login page")
+def step_on_login_page(context):
+    context.pages[AuthSignInPage].check_url()
+
 @then("I am logged in")
 def step_logged_in(context):
     context.pages[CasesPage].check_url()
@@ -42,6 +46,10 @@ def step_logged_in(context):
 @when("I select a random account")
 def step_select_random_account(context):
     context.pages[AuthAccountPage].select_random_account()
+
+@when("I go back to the login page from the account page")
+def step_go_back_to_login_from_account(context):
+    context.pages[AuthAccountPage].go_back_to_signin()
 
 
 def _normalize_user_key(user_key: str) -> str:

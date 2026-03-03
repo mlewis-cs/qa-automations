@@ -19,7 +19,24 @@ This is a regression testing suite built with Python, Behave, and Playwright
 
 ## Answering Prompts
 
-When answering prompts to add functionality, first use the repo as a reference of what pages / functionality exists, then use Playwright CLI to confirm selectors when needed. When using Playwright CLI, use .env credentials and BASE_URL to navigate initially, and search the repo by your sub directory to find the appropriate page class to find context in the repo.
+When answering prompts to add functionality, first use the repo as a reference of what pages / functionality exists, then use Playwright CLI to confirm selectors when needed. When using Playwright CLI, use .env credentials and BASE_URL to navigate initially, and search the repo by your sub directory to find the appropriate page class to find context in the repo. Prefer Playwright in headless mode.
+
+## Playwright CLI (No Skill)
+
+You can run Playwright directly via the CLI without any skill. Pull `BASE_URL` from `tests/.env` and navigate to the login page first.
+
+Example (verified working in sandbox, headless):
+
+```bash
+/opt/homebrew/bin/playwright-cli open https://sandbox-web.creativebriefcase.com/auth/signin
+/opt/homebrew/bin/playwright-cli -s=default snapshot
+```
+
+Notes:
+
+* `open` starts a browser session (default session name is `default`).
+* Use `-s=default` to reuse the same session for `goto`, `snapshot`, etc.
+* If the session gets stuck, use `list`, `close-all`, or `kill-all` to reset.
 
 ## Verifying Answers
 
@@ -27,6 +44,7 @@ If you have created the necessary code to answer the prompt, always verify your 
 
 1. If you have created a new test step, create a feature file in `tests/features/temporary/` that tests the new step and run it to verify it passes. Do not delete the file when you are done.
 2. If you have modified existing behavior used by Behave tests, run feature files that use the modified code and verify it passes. If you need to add scenarios or modify one, use method 1 instead.
+3. If you were explicitly asked to create new steps OR if you infer the request warrants permanent tests, add the scenarios / features as need to fulfill the prompt then verify they pass.
 
 ## Running Behave Steps
 
@@ -41,3 +59,13 @@ To run all features:
 ```bash
 env PW_DISABLE_CRASH_REPORTER=1 HEADLESS_MODE=true /.venv/bin/behave tests/features
 ```
+
+## Sandbox vs. Playwright (Codex)
+
+Playwright browser launches can fail in the Codex sandbox with macOS MachPort permission errors (e.g., `bootstrap_check_in ... Permission denied`). If a Behave run fails with this error, rerun the same command **outside** the sandbox (escalated) using the same flags:
+
+```bash
+env PW_DISABLE_CRASH_REPORTER=1 HEADLESS_MODE=true /.venv/bin/behave tests/features/temporary/account_back_to_login.feature
+```
+
+In practice, prefer running Playwright/Behave outside the sandbox by default to avoid repeated launch failures.

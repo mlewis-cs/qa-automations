@@ -17,6 +17,8 @@ class AuthSignInPage(BasePage):
 
 class AuthAccountPage(BasePage):
     SUB_DIRECTORY = "/auth/account"
+    # Selectors
+    BACK_TO_SIGNIN_BUTTON = "button:has-text('Back to Signin')"
 
     def check_account_num(self) -> int:
         return self.find("[data-testid^='sub-account-option']").count()
@@ -40,3 +42,6 @@ class AuthAccountPage(BasePage):
         if count > 1:
             raise ValueError(f"Multiple accounts named '{firm_name}' found; update test data")
         matches.first.click()
+
+    def go_back_to_signin(self) -> None:
+        self.click(self.BACK_TO_SIGNIN_BUTTON)
