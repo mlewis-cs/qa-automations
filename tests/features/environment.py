@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 from os import getenv
 
 from tests.pages.auth_pages import AuthSignInPage, AuthAccountPage
-from tests.pages.cases_page import CasesPage, TriagePage
+from tests.pages.cases_pages import CasesPage, TriagePage
 
 
 def _init_scenario_context(context):

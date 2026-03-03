@@ -36,3 +36,7 @@ class BasePage:
 
     def fill(self, selector: str, text: str) -> None:
         self.page.locator(selector).fill(text)
+    
+
+    def find(self, selector: str):
+        return self.page.locator(selector)

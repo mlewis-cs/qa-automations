@@ -19,13 +19,24 @@ class AuthAccountPage(BasePage):
     SUB_DIRECTORY = "/auth/account"
 
     def check_account_num(self) -> int:
-        return self.page.locator("[data-testid^='sub-account-option']").count()
+        return self.find("[data-testid^='sub-account-option']").count()
 
 
     def select_random_account(self):
-        accounts = self.page.locator("[data-testid^='sub-account-option']")
+        accounts = self.find("[data-testid^='sub-account-option']")
         count = accounts.count()
         if count <= 1:
             raise ValueError(f"Expected multiple accounts but found {count}; update test data")
         random_index = randint(0, count - 1)
         accounts.nth(random_index).click()
+
+
+    def select_account_by_name(self, firm_name: str) -> None:
+        accounts = self.find("[data-testid^='sub-account-option']")
+        matches = accounts.filter(has_text=firm_name)
+        count = matches.count()
+        if count == 0:
+            raise ValueError(f"Account named '{firm_name}' not found; update test data")
+        if count > 1:
+            raise ValueError(f"Multiple accounts named '{firm_name}' found; update test data")
+        matches.first.click()

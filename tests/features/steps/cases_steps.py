@@ -1,6 +1,6 @@
 from behave import when
 
-from tests.pages.cases_page import CasesPage, TriagePage
+from tests.pages.cases_pages import CasesPage, TriagePage
 
 
 @when("I navigate to the triage page from cases")

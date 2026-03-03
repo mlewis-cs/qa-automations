@@ -14,7 +14,7 @@ class CasesPage(BasePage):
         assert path.startswith("/admin/"), f"Expected URL path to start with /admin/, but was {path}"
 
     def go_to_triage(self):
-        self.page.locator(self.TRIAGE_BUTTON).click()
+        self.click(self.TRIAGE_BUTTON)
 
 
 class TriagePage(BasePage):

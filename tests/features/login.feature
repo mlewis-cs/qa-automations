@@ -12,6 +12,5 @@ Feature: Login
     When I select a random account
     Then I am logged in
 
-    
-
-    
+    Scenario: Shorthand
+    Given I'm in firm "Mobile Testing" as "multi account attorney"
