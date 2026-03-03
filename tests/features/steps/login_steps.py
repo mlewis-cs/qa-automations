@@ -1,15 +1,14 @@
 from behave import given, when, then
 import re
-from tests.pages.login_page import LoginPage
+from tests.pages.auth_pages import AuthSignInPage, AuthAccountPage
+from tests.pages.cases_page import CasesPage
 from os import getenv
 
 @given("I am on the login page")
 def step_open_login(context):
-    context.pages[LoginPage].goto()
-    context.page.wait_for_url("**/login")
-    assert context.page.url.endswith("/login"), f"Expected to be on login page, but was on {context.page.url}"
+    context.pages[AuthSignInPage].goto()
 
-@then('I log in as "{user_key}"')
+@when('I log in as "{user_key}"')
 def step_login_as_user(context, user_key: str):
     normalized_key = _normalize_user_key(user_key)
     email_key = f"USER_{normalized_key}_EMAIL"
@@ -21,12 +20,25 @@ def step_login_as_user(context, user_key: str):
         raise ValueError(
             f"{email_key} or {password_key} is not set in .env"
         )
-    context.pages[LoginPage].login(username, password)
+    context.pages[AuthSignInPage].login(username, password)
 
-@then ("I should see the cases page")
-def step_see_cases(context):
-    context.page.wait_for_url("**/cases")
-    assert context.page.url.endswith("/cases"), f"Expected to be on cases page, but was on {context.page.url}"
+@then("I am redirected to the cases page after the account page")
+def step_redirect_account_to_cases(context):
+    context.pages[AuthAccountPage].check_url()
+    assert context.pages[AuthAccountPage].check_account_num() == 1, "Expected user to have 1 account; update test data"
+    context.pages[CasesPage].check_url()
+
+@then("I am redirected to the account page")
+def step_redirect_to_account(context):
+    context.pages[AuthAccountPage].check_url()
+
+@then("I am redirected to the cases page")
+def step_redirect_to_cases(context):
+    context.pages[CasesPage].check_url()
+
+@when("I select a random account")
+def step_select_random_account(context):
+    context.pages[AuthAccountPage].select_random_account()
 
 
 def _normalize_user_key(user_key: str) -> str:
