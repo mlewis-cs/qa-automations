@@ -40,10 +40,10 @@ Notes:
 
 ## Verifying Answers
 
-If you have created the necessary code to answer the prompt, always verify your steps. If the verification fails use the error message to adjust your approach and try again. You are only finished answering when you can get one of these testing options to pass.
+If you have created the necessary code to answer the prompt, always verify your steps. If the verification fails use the error message to adjust your approach and try again. You are only finished answering when you can complete one of these testing workflows.
 
-1. If you asked to create a new test step or scenario, create a feature file in `tests/features/temporary/` that tests the new step and run it to verify it passes. Once it passes, consolidate the tests into an existing feature file or as a new feature file depending on what makes the most sense. Do not delete the temporary file.
-2. If you asked to modify existing behavior used by Behave tests, run feature files that use the modified code and verify it passes. If you need to add scenarios or modify one, use method 1 instead.
+1. If you asked to create a new test step or scenario, create a feature file in `tests/features/temporary/` that tests the new step and run it to verify it passes. Once it passes, consolidate the tests into an existing feature file or as a new feature file depending on what makes the most sense. Do not delete the temporary file. Once you have consolidated tests, run the newly created/updated feature file(s) and iterate until they pass. Use the temporary features as a reference if they are not passing.
+2. If you asked to modify existing behavior used by Behave tests, run feature files that use the modified code and verify it passes. If you need to add scenarios or modify feature files, use method 1 instead.
 
 ## Running Behave Steps
 
