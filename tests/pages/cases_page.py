@@ -4,9 +4,20 @@ from urllib.parse import urlparse
 
 class CasesPage(BasePage):
     SUB_DIRECTORY = "/admin/cases"
+    # Selectors
+    TRIAGE_BUTTON = "button:has-text('Triage')"
 
     def check_url(self):
         # Some accounts land on sub-routes under /admin/ after login.
         self.page.wait_for_url("**/admin/**")
         path = urlparse(self.page.url).path
         assert path.startswith("/admin/"), f"Expected URL path to start with /admin/, but was {path}"
+
+    def go_to_triage(self):
+        self.page.locator(self.TRIAGE_BUTTON).click()
+
+
+class TriagePage(BasePage):
+    SUB_DIRECTORY = "/admin/cases/triage"
+
+    
