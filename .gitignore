@@ -3,6 +3,7 @@
 .env
 .playwright-cli
 tests/features/temporary/
+report/*
 
 # Python
 __pycache__/
