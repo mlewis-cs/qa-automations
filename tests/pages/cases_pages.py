@@ -12,7 +12,7 @@ class CasesPage(BasePage):
     LOGOUT_BUTTON = "text=Logout"
 
     def check_url(self):
-        # Some accounts land on sub-routes under /admin/ after login.
+        # Some accounts land on deeper /admin/ routes after login.
         self.page.wait_for_url("**/admin/**")
         path = urlparse(self.page.url).path
         assert path.startswith("/admin/"), f"Expected URL path to start with /admin/, but was {path}"
@@ -21,6 +21,7 @@ class CasesPage(BasePage):
         self.click(self.TRIAGE_BUTTON)
 
     def go_to_web_app(self):
+        # Capture web-app page that appears in new tab
         with self.page.context.expect_page() as new_page_info:
             self.click(self.GO_TO_WEB_APP_BUTTON)
         new_page = new_page_info.value

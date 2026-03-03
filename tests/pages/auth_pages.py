@@ -26,13 +26,21 @@ class AuthAccountPage(BasePage):
     SUB_DIRECTORY = "/auth/account"
     # Selectors
     BACK_TO_SIGNIN_BUTTON = "button:has-text('Back to Signin')"
+    ACCOUNT_OPTIONS = "[data-testid^='sub-account-option']"
+
 
     def check_account_num(self) -> int:
-        return self.find("[data-testid^='sub-account-option']").count()
+        self.find(self.ACCOUNT_OPTIONS).first.wait_for(state="visible", timeout=5000)
+        return self.find(self.ACCOUNT_OPTIONS).count()
 
 
     def select_random_account(self):
-        accounts = self.find("[data-testid^='sub-account-option']")
+        accounts = self.find(self.ACCOUNT_OPTIONS)
+        self.page.wait_for_function(
+            """([selector, minimum]) => document.querySelectorAll(selector).length >= minimum""",
+            arg=[self.ACCOUNT_OPTIONS, 2],
+            timeout=5000,
+        )
         count = accounts.count()
         if count <= 1:
             raise ValueError(f"Expected multiple accounts but found {count}; update test data")
@@ -41,7 +49,9 @@ class AuthAccountPage(BasePage):
 
 
     def select_account_by_name(self, firm_name: str) -> None:
-        accounts = self.find("[data-testid^='sub-account-option']")
+        accounts = self.find(self.ACCOUNT_OPTIONS)
+        target = accounts.filter(has_text=firm_name).first
+        target.wait_for(state="visible", timeout=5000)
         matches = accounts.filter(has_text=firm_name)
         count = matches.count()
         if count == 0:
@@ -49,6 +59,7 @@ class AuthAccountPage(BasePage):
         if count > 1:
             raise ValueError(f"Multiple accounts named '{firm_name}' found; update test data")
         matches.first.click()
+
 
     def go_back_to_signin(self) -> None:
         self.click(self.BACK_TO_SIGNIN_BUTTON)

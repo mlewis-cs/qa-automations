@@ -26,7 +26,7 @@ class BasePage:
     
 
     def check_url(self):
-        self.page.wait_for_url(f"**{self.SUB_DIRECTORY}")
+        self.page.wait_for_url(f"**{self.SUB_DIRECTORY}**")
         assert self.page.url.endswith(self.SUB_DIRECTORY), f"Expected to be on {self.SUB_DIRECTORY} page, but was on {self.page.url}"
 
 
