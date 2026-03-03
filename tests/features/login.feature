@@ -20,3 +20,10 @@ Feature: Login
     When I log in with invalid credentials
     Then I see an invalid credentials error message
     And I am on the login page
+
+    Scenario: Logout from cases page
+    Given I am on the login page
+    When I log in as "single account attorney"
+    Then I am logged in after the account page
+    When I log out from the cases page
+    Then I am on the login page

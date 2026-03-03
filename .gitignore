@@ -2,6 +2,7 @@
 .vscode/
 .env
 .playwright-cli
+tests/features/temporary/
 
 # Python
 __pycache__/
