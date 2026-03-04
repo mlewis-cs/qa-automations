@@ -1,6 +1,4 @@
 from behave import given, when, then
-import re
-from os import getenv
 from tests.pages.auth_pages import AuthSignInPage, AuthAccountPage
 from tests.pages.cases_pages import CasesPage
 
@@ -10,7 +8,7 @@ def step_open_login(context):
 
 @when('I log in as "{user_key}"')
 def step_login_as_user(context, user_key: str):
-    username, password = _get_user_credentials(user_key)
+    username, password = context.pages[AuthSignInPage].get_user_credentials(user_key)
     context.pages[AuthSignInPage].action_login(username, password)
 
 @when("I log in with invalid credentials")
@@ -49,25 +47,3 @@ def step_select_random_account(context):
 @when("I go back to the login page from the account page")
 def step_go_back_to_login_from_account(context):
     context.pages[AuthAccountPage].action_go_back_to_signin()
-
-
-def _normalize_user_key(user_key: str) -> str:
-    # Allow behave steps to reference env vars with more natural formatting
-    # ie "test attorney" -> TEST_ATTORNEY
-    normalized = re.sub(r"[^0-9A-Za-z]+", "_", user_key).strip("_")
-    normalized = re.sub(r"_+", "_", normalized)
-    return normalized.upper()
-
-
-def _get_user_credentials(user_key: str) -> tuple[str, str]:
-    normalized_key = _normalize_user_key(user_key)
-    email_key = f"USER_{normalized_key}_EMAIL"
-    password_key = f"USER_{normalized_key}_PASSWORD"
-
-    username = getenv(email_key)
-    password = getenv(password_key)
-    if not username or not password:
-        raise ValueError(
-            f"{email_key} or {password_key} is not set in .env"
-        )
-    return username, password

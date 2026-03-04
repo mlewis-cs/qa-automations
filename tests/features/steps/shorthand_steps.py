@@ -1,7 +1,6 @@
 import time
 from behave import given, when, then
 
-from tests.features.steps.login_steps import _get_user_credentials
 from tests.pages.cases_pages import CasesPage
 from tests.pages.auth_pages import AuthSignInPage, AuthAccountPage
 
@@ -10,7 +9,7 @@ from tests.pages.auth_pages import AuthSignInPage, AuthAccountPage
 @given('I\'m in firm "{firm}" as "{user_key}"')
 def step_login_in_firm(context, firm: str, user_key: str):
     context.pages[AuthSignInPage].goto()
-    username, password = _get_user_credentials(user_key)
+    username, password = context.pages[AuthSignInPage].get_user_credentials(user_key)
     context.pages[AuthSignInPage].action_login(username, password)
     context.pages[AuthAccountPage].check_url()
     if context.pages[AuthAccountPage].get_account_num() > 1:
