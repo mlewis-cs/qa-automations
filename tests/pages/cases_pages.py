@@ -8,7 +8,7 @@ class CasesPage(BasePage):
     # Selectors
     TRIAGE_BUTTON = "button:has-text('Triage')"
     GO_TO_WEB_APP_BUTTON = "[data-testid='sidebar-external-link-web_app']"
-    PROFILE_PICTURE_ICON = "[data-testid='profile-picture-icon']"
+    AVATAR_BUTTON = "[data-testid='avatar']"
     LOGOUT_BUTTON = "text=Logout"
 
     def check_url(self):
@@ -29,8 +29,15 @@ class CasesPage(BasePage):
         return new_page
 
     def open_profile_menu(self):
-        self.click(self.PROFILE_PICTURE_ICON)
-        self.find(self.LOGOUT_BUTTON).wait_for(state="visible", timeout=5000)
+        logout = self.find(self.LOGOUT_BUTTON)
+        for _ in range(3):
+            self.click(self.AVATAR_BUTTON)
+            try:
+                logout.wait_for(state="visible", timeout=2000)
+                return
+            except Exception:
+                continue
+        raise AssertionError("Profile menu did not open after 3 attempts; Logout option was not visible")
 
     def log_out(self):
         self.open_profile_menu()
