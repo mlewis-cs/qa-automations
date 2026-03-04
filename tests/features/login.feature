@@ -12,8 +12,11 @@ Feature: Login
     When I select a random account
     Then I am logged in
 
-    Scenario: Shorthand
+    Scenario: Shorthand with multiple accounts
     Given I'm in firm "Mobile Testing" as "multi account attorney"
+
+    Scenario: Shorthand with single account
+    Given I'm in firm "Mass Cases" as "single account attorney"
 
     Scenario: Invalid credentials show an error
     Given I am on the login page
@@ -21,9 +24,9 @@ Feature: Login
     Then I see an invalid credentials error message
     And I am on the login page
 
-    Scenario: Logout from cases page
+    Scenario: Back to login page from account page
     Given I am on the login page
-    When I log in as "single account attorney"
-    Then I am logged in after the account page
-    When I log out from the cases page
+    When I log in as "multi account attorney"
+    Then I am redirected to the account page
+    When I go back to the login page from the account page
     Then I am on the login page

@@ -8,7 +8,6 @@ import shutil
 from tests.pages.auth_pages import AuthSignInPage, AuthAccountPage
 from tests.pages.cases_pages import CasesPage, TriagePage
 
-PRESENTATION_END_WAIT_SECONDS = 3
 
 def _init_scenario_context(context):
     # New browser context per scenario to ensure a clean session.
@@ -27,12 +26,10 @@ def before_all(context):
     # Load .env
     env_path = Path(__file__).resolve().parents[1] / ".env"
     load_dotenv(env_path)
-    presentation_mode = getenv("PRESENTATION_MODE") == "true"
     generate_report = getenv("GENERATE_REPORT") == "true"
-    headless_mode = not presentation_mode
-    context.presentation_mode = presentation_mode
+    headless_mode = getenv("HEADLESS_MODE") == "true"
     context.generate_report = generate_report
-    if presentation_mode:
+    if generate_report:
         repo_root = Path(__file__).resolve().parents[2]
         report_dir = repo_root / "report"
         if report_dir.exists():
@@ -48,10 +45,8 @@ def before_scenario(context, scenario):
 
 
 def after_scenario(context, scenario):
-    if getattr(context, "presentation_mode", False):
-        time.sleep(PRESENTATION_END_WAIT_SECONDS)
-    
     if getattr(context, "page", None) is not None and getattr(context, "generate_report", False):
+        # Get screenshot and add to report
         repo_root = Path(__file__).resolve().parents[2]
         report_dir = repo_root / "report"
         report_dir.mkdir(parents=True, exist_ok=True)

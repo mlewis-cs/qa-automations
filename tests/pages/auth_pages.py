@@ -12,14 +12,10 @@ class AuthSignInPage(BasePage):
         "h3:has-text('Your username and password combination is not correct. Please try again.')"
     )
 
-    def login(self, username: str, password: str):
+    def action_login(self, username: str, password: str):
         self.fill(self.EMAIL_PHONE, username)
         self.fill(self.PASSWORD, password)
         self.click(self.LOGIN_BUTTON)
-
-    def check_invalid_credentials_error(self) -> None:
-        error = self.find(self.INVALID_CREDENTIALS_ERROR)
-        error.wait_for(state="visible", timeout=5000)
 
 
 class AuthAccountPage(BasePage):
@@ -29,7 +25,7 @@ class AuthAccountPage(BasePage):
     ACCOUNT_OPTIONS = "[data-testid^='sub-account-option']"
 
 
-    def check_account_num(self) -> int:
+    def get_account_num(self) -> int:
         self.find(self.ACCOUNT_OPTIONS).first.wait_for(state="visible", timeout=5000)
         return self.find(self.ACCOUNT_OPTIONS).count()
 
@@ -61,5 +57,5 @@ class AuthAccountPage(BasePage):
         matches.first.click()
 
 
-    def go_back_to_signin(self) -> None:
+    def action_go_back_to_signin(self) -> None:
         self.click(self.BACK_TO_SIGNIN_BUTTON)

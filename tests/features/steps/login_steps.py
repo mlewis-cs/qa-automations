@@ -1,7 +1,6 @@
 from behave import given, when, then
 import re
 from os import getenv
-from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from tests.pages.auth_pages import AuthSignInPage, AuthAccountPage
 from tests.pages.cases_pages import CasesPage
 
@@ -12,27 +11,17 @@ def step_open_login(context):
 @when('I log in as "{user_key}"')
 def step_login_as_user(context, user_key: str):
     username, password = _get_user_credentials(user_key)
-    context.pages[AuthSignInPage].login(username, password)
+    context.pages[AuthSignInPage].action_login(username, password)
 
 @when("I log in with invalid credentials")
 def step_login_with_invalid_credentials(context):
-    context.pages[AuthSignInPage].login("invalid@example.com", "wrongpass")
+    context.pages[AuthSignInPage].action_login("invalid@example.com", "wrongpass")
 
-@given('I\'m in firm "{firm}" as "{user_key}"')
-def step_login_in_firm(context, firm: str, user_key: str):
-    context.pages[AuthSignInPage].goto()
-    username, password = _get_user_credentials(user_key)
-    context.pages[AuthSignInPage].login(username, password)
-
-    destination = _wait_for_account_or_admin(context)
-    if destination == "account":
-        context.pages[AuthAccountPage].select_account_by_name(firm)
-        context.pages[CasesPage].check_url()
 
 @then("I am logged in after the account page")
 def step_logged_in_after_account_page(context):
     context.pages[AuthAccountPage].check_url()
-    assert context.pages[AuthAccountPage].check_account_num() == 1, "Expected user to have 1 account; update test data"
+    assert context.pages[AuthAccountPage].get_account_num() == 1, "Expected user to have 1 account; update test data"
     context.pages[CasesPage].check_url()
 
 @then("I am redirected to the account page")
@@ -45,7 +34,9 @@ def step_on_login_page(context):
 
 @then("I see an invalid credentials error message")
 def step_invalid_credentials_error(context):
-    context.pages[AuthSignInPage].check_invalid_credentials_error()
+    error = context.pages[AuthSignInPage].find(AuthSignInPage.INVALID_CREDENTIALS_ERROR)
+    error.wait_for(state="visible", timeout=5000)
+    assert error.is_visible(), "Expected invalid credentials error message to be visible"
 
 @then("I am logged in")
 def step_logged_in(context):
@@ -57,7 +48,7 @@ def step_select_random_account(context):
 
 @when("I go back to the login page from the account page")
 def step_go_back_to_login_from_account(context):
-    context.pages[AuthAccountPage].go_back_to_signin()
+    context.pages[AuthAccountPage].action_go_back_to_signin()
 
 
 def _normalize_user_key(user_key: str) -> str:
@@ -80,12 +71,3 @@ def _get_user_credentials(user_key: str) -> tuple[str, str]:
             f"{email_key} or {password_key} is not set in .env"
         )
     return username, password
-
-
-def _wait_for_account_or_admin(context) -> str:
-    try:
-        context.page.wait_for_url("**/auth/account", timeout=5000)
-        return "account"
-    except PlaywrightTimeoutError:
-        context.pages[CasesPage].check_url()
-        return "admin"
