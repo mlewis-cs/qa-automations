@@ -33,11 +33,12 @@ def action_login(runtime: Any, args: dict[str, Any]) -> dict[str, Any]:
     user_key = str(args.get("user_key", "single account attorney"))
     username, password = AuthSignInPage.get_user_credentials(user_key)
 
+    selectors = AuthSignInPage.SELECTORS
     script = (
         "async (page) => {"
-        f"  await page.fill({json.dumps(AuthSignInPage.EMAIL_PHONE)}, {json.dumps(username)});"
-        f"  await page.fill({json.dumps(AuthSignInPage.PASSWORD)}, {json.dumps(password)});"
-        f"  await page.click({json.dumps(AuthSignInPage.LOGIN_BUTTON)});"
+        f"  await page.fill({json.dumps(selectors['email_phone'])}, {json.dumps(username)});"
+        f"  await page.fill({json.dumps(selectors['password'])}, {json.dumps(password)});"
+        f"  await page.click({json.dumps(selectors['login_button'])});"
         "  await page.waitForLoadState('domcontentloaded');"
         "  return page.url();"
         "}"

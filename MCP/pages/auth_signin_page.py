@@ -9,12 +9,12 @@ from .base_page import BasePage
 class AuthSignInPage(BasePage):
     SUB_DIRECTORY = "/auth/signin"
 
-    EMAIL_PHONE = "#email"
-    PASSWORD = "#password"
-    LOGIN_BUTTON = "button[type='submit']"
-    INVALID_CREDENTIALS_ERROR = (
-        "h3:has-text('Your username and password combination is not correct. Please try again.')"
-    )
+    SELECTORS: dict[str, str] = {
+        "email_phone": "#email",
+        "password": "#password",
+        "login_button": "button[type='submit']",
+        "invalid_credentials_error": "h3:has-text('Your username and password combination is not correct. Please try again.')",
+    }
 
     def action_login(self, username: str, password: str) -> None:
         """Metadata signature only; action execution is handled by MCP actions."""

@@ -4,6 +4,7 @@
 .playwright-cli
 tests/features/temporary/
 report/*
+artifacts/*
 
 # Python
 __pycache__/

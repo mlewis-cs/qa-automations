@@ -6,6 +6,7 @@ from typing import Any
 
 class BasePage:
     SUB_DIRECTORY: str = ""
+    SELECTORS: dict[str, str] = {}
 
     def __init_subclass__(cls) -> None:
         super().__init_subclass__()
@@ -14,14 +15,7 @@ class BasePage:
 
     @classmethod
     def selectors(cls) -> dict[str, str]:
-        selected: dict[str, str] = {}
-        for attr in dir(cls):
-            if not attr.isupper():
-                continue
-            value = getattr(cls, attr)
-            if isinstance(value, str):
-                selected[attr] = value
-        return selected
+        return cls.SELECTORS
 
     @classmethod
     def _collect_methods(cls, prefix: str) -> list[dict[str, Any]]:

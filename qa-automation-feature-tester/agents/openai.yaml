@@ -1,0 +1,4 @@
+interface:
+  display_name: "QA Feature Tester"
+  short_description: "Validate features with MCP evidence"
+  default_prompt: "Test a specific feature using qa_automation MCP. First define screenshot evidence needed for pass/fail. Run tests with initialize->context->actions->CLI fallback, checkpoint key milestones, then update MCP page/action coverage with stable selectors or routines discovered. Return a pass/fail report with embedded screenshot images."
